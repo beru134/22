@@ -1,4 +1,4 @@
-getgenv().AutoTap = false;
+getgenv().AutoTap = true;
 getgenv().AutoBuyEgg = false;
 
 
