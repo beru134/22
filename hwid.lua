@@ -700,7 +700,7 @@ end
 function EspInterface.getWeapon(player)
 	return "Unknown";
 end
-function EspInterface.isFriendly(player)
+function EspInterface.isFriendly(character)
     if game.Players:GetPlayerFromCharacter(character) then
         return 
     end
@@ -727,4 +727,5 @@ function EspInterface.getHealth(player)
 end
 
 return EspInterface;
+
 
