@@ -34,7 +34,7 @@ local remotes = {
     },
 }
 
-local function GetRemote(remoteName: string)
+getgenv().GetRemote = function(remoteName: string)
     local CurrentWorld = require(game:GetService("ReplicatedStorage").Info.RealmInfo).CurrentWorld
     local password = remotes[CurrentWorld][remoteName]
     assert(password, `{remoteName} is not valid`)
@@ -53,7 +53,3 @@ local function GetRemote(remoteName: string)
     assert(remote, `Failed to grab {remoteName}`)
     return remote
 end
-    
-return {
-    GetRemote = GetRemote
-}
