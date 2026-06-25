@@ -1,4 +1,4 @@
-getgenv().oth.hook = oth.hook or hookfunction()
+getgenv().oth.hook = oth.hook or hookfunction
 getgenv().oth.unhook =  oth.unhook or function(x) if isfunctionhooked(x) then restorefunction(x) end 
 
 local KeyHandler = require(game:GetService("ReplicatedStorage").Assets.Modules.KeyHandler)()
