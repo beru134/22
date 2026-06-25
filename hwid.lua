@@ -23,7 +23,13 @@
         local APPLY_FALL_DAMAGE_PASSWORD = 90.32503962905011
         local SET_MANA_CHARGE_STATE_PASSWORD = 27.81839265298673
         local cachedRemotes = {};
-
+        getgenv().tango;
+	    getgenv().fallDamage;
+	    getgenv().dodge;
+	    getgenv().manaCharge;
+	    getgenv().dialog;
+	    getgenv().dolorosa;
+	    getgenv().changeArea;
         local function grabKeyHandler()
             if(isGaia) then
                 for i, v in next, getgc() do
@@ -126,7 +132,7 @@
                             setRemote('changeArea', getKey('SetCurrentArea', 'plum'));
                         end;
                     else
-                        local character = oldIndex(LocalPlayer, 'Character');
+                        local character = LocalPlayer.Character
                         local characterHandler = character and FindFirstChild(character, 'CharacterHandler');
                         local remotes = characterHandler and FindFirstChild(characterHandler, 'Remotes');
         
