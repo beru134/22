@@ -1,27 +1,7 @@
-if not getgenv().httpHook then
-    getgenv().httpHook = true
-    local oldHook;
-    oldHook = hookmetamethod(game, "__index", newcclosure(function(self, key)
-        if key == "HttpGet" then
-            error("Http requests are not enabled", 2)
-        end
+getgenv().oth.hook = oth.hook or hookfunction()
+getgenv().oth.unhook =  oth.unhook or function(x) if isfunctionhooked(x) then restorefunction(x) end 
 
-        return oldHook(self, key)
-    end))
-end
-
-local old
-    old = hookfunction(getrenv().getfenv, newcclosure(function(level)
-        return {}
-    end))
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local KeyHandler = require(ReplicatedStorage.Assets.Modules.KeyHandler)()
-
-if isfunctionhooked(getrenv().getfenv) then
-    restorefunction(getrenv().getfenv)
-end
-
+local KeyHandler = require(game:GetService("ReplicatedStorage").Assets.Modules.KeyHandler)()
 local remotes = {
     Gaia = {
         ["PostDialogue"] = 404.5041892976703,
@@ -37,6 +17,8 @@ local remotes = {
         ["HideOre"] = "HideOre",
     },
     Khei = {
+        ["Charge"] = "Charge",
+        ["FallDamage"] = "FallDamage",
         ["SendDialogue"] = "SendDialogue",
         ["Dolorosa"] = "Dolorosa",
         ["HideIngredient"] = "HideIngredient",
@@ -47,36 +29,30 @@ local remotes = {
         ["MoneyBag"] = "MoneyBag",
         ["ToolBag"] = "ToolBag",
         ["UpdateArea"] = "UpdateArea",
-        ["Drop"] = "Drop"
-    }  
+        ["Drop"] = "Drop",
+    },
 }
 
-local function getRemote(remoteName: string): RemoteEvent? | RemoteFunction?
-    local universe = (game.PlaceId == 3541987450 and "Khei") or "Gaia"
-    local remotePassword = remotes[universe][remoteName]
-    if not remotePassword then
-        return warn(`{remoteName} is not a valid remote`)
-    end
+local function GetRemote(remoteName: string)
+    local CurrentWorld = require(game:GetService("ReplicatedStorage").Info.RealmInfo).CurrentWorld
+    local password = remotes[CurrentWorld][remoteName]
+    assert(password, `{remoteName} is not valid`)
 
-    if not isfunctionhooked(getrenv().getfenv) then
-        local old
-        old = hookfunction(getrenv().getfenv, newcclosure(function(level)
-            return {}
-        end))
-    end
+    local key = (CurrentWorld == "Gaia" and "plum") or (CurrentWorld == "Khei" and "apricot")
+    assert(key, `Invalid Key, check PlaceId/Realm`)
 
-    local remote
-    if universe == "Khei" then
-        remote = KeyHandler.getKey(remotePassword, "apricot")
-    elseif universe == "Gaia" then
-        remote = KeyHandler[1](remotePassword, "plum")
+    if CurrentWorld == "Khei" then
+        oth.unhook(getrenv().getfenv)
+        oth.hook(getrenv().getfenv, function(level)
+            return getsenv(game:GetService("Players").LocalPlayer.PlayerScripts.ClientManage)
+        end)
     end
-
-    if isfunctionhooked(getrenv().getfenv) then
-        restorefunction(getrenv().getfenv)
-    end
-
+    local remote = (CurrentWorld == "Gaia" and KeyHandler[1](password, key)) or (CurrentWorld == "Khei" and KeyHandler.getKey(password, key))
+    oth.unhook(getrenv().getfenv)
+    assert(remote, `Failed to grab {remoteName}`)
     return remote
 end
-
-print(getRemote("SendDialogue"))
+    
+return {
+    GetRemote = GetRemote
+}
