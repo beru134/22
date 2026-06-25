@@ -1,4 +1,4 @@
- 
+ xpcall(function()
         local getKey;
         local isGaia = game.PlaceId == 5208655184;
         getgenv().remotes = {};
@@ -166,4 +166,4 @@
         
                     return oldNameCall(self, ...);
                 end);
-        
+	end, function(...) warn(...) end
